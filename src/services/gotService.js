@@ -14,8 +14,8 @@ export default class GotService {
     };
 
     async getAllCharacters(){
-        const res = await this.getResource('/characters?page=1&pageSize=10');
-        return await res.map(this._transformCharacter);
+        const res = await this.getResource(`/characters?page=5&pageSize=10`);
+        return res.map(this._transformCharacter);
     }
 
     async getCharacter(id){
@@ -23,50 +23,54 @@ export default class GotService {
         return this._transformCharacter(character);
     }
 
-    getAllBooks() {
-        return this.getResource(`/books/`);
+    async getAllBooks() {
+        const res = await this.getResource(`/books/`);
+        return res.map(this._transformBook);
     }
     
-    getBook(id) {
-        return this.getResource(`/books/${id}/`);
+    async getBook(id) {
+        const book = await this.getResource(`/books/${id}/`);
+        return this._transformBook(book);
     }
     
-    getAllHouses() {
-        return this.getResource(`/houses/`);
+    async getAllHouses() {
+        const res = await this.getResource(`/houses/`);
+        return res.map(this._transformHouse);
     }
     
-    getHouse(id) {
-        return this.getResource(`/houses/${id}/`);
+    async getHouse(id) {
+        const house = this.getResource(`/houses/${id}/`);
+        return this._transformHouse(house);
     }
 
-    checkEmptyField(item){
-        const empty = "empty :("
-        if(item === ''){
-            return empty;
+    isEmpty(data){
+        if(data){
+            return data
         } else {
-            return item;
+            return 'no data :('
         }
     }
 
 
-    _transformCharacter(char){
+    _transformCharacter = (char) => {
 
         return {
-            name: this.checkEmptyField(char.name),
-            gender: this.checkEmptyField(char.gender),
-            born: this.checkEmptyField(char.born),
-            died: this.checkEmptyField(char.died),
-            culture: this.checkEmptyField(char.culture)
+            name: this.isEmpty(char.name),
+            gender: this.isEmpty(char.gender),
+            born: this.isEmpty(char.born),
+            died: this.isEmpty(char.died),
+            culture: this.isEmpty(char.culture)
         }
     }
 
+    
     _transformHouse(house){
         return {
-            name: house.name,
-            region: house.region,
-            words: house.words,
-            title: house.title,
-            ancestralWeapons: house.ancestralWeapons
+            name: this.checkEmptyField(house.name),
+            region: this.checkEmptyField(house.region),
+            words: this.checkEmptyField(house.words),
+            title: this.checkEmptyField(house.title),
+            ancestralWeapons: this.checkEmptyField(house.ancestralWeapons)
         }
     }
 
